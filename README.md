@@ -1,5 +1,5 @@
 # ymeh
-ytdlp made easy handler, a bash script and c++ app to make downloading and managing playlists, videos more easier
+ytdlp made easy handler, a bash script and c++ command to make downloading and managing playlists, videos more easier
 
 personal tool, expected to work on Linux.
 didnt test for Windows, but code may run on it.
