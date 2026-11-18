@@ -8,7 +8,7 @@
 /*string management*/
 #include<string>
 
-void ytdlpLogic(std::string rootPlaylistPath, std:string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
+void verboseYtdlpLogic(std::string rootPlaylistPath, std:string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
 {
 	if(cookies==true)
 	{
@@ -42,9 +42,6 @@ int main(int argc, char** argv)
 	ytdlp->get_formatter()->label("Positionals","Arguments");
 	
 	//main ytdlp arguments
-		std::string browser
-		ytdlp->add_option("-b, --browser, browser",browser,"the URL of the youtube playlist");
-
 		std::string youtubeLink;
 		ytdlp->add_option("-l, --link, youtube_link",youtubeLink,"the URL of the youtube playlist")->required();
 
@@ -54,15 +51,20 @@ int main(int argc, char** argv)
 		std::string archiveFile;
 		ytdlp->add_option("-af, --archivefile, archive_file",archiveFile,"where the video IDs will be stored to not repeat downloads")->required();
 
+		std::string browser;
+		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser");
+
+		bool verbose{false};
+		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes");
+
 		ytdlp->footer(
 			"Example (Command line):\n
-			dmeh \"chromium\" \"https://youtube.com...\" \"/home/user/Music\" \"archive.txt\"\n
+			dmeh https://youtube.com/1234 /home/user/Music ~archive.txt\n
 			Interactive mode:\n
-			simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset \n"
+			simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
 		);
-		dmeh.require_subcommand(1);
 
-//for the interactive part of the code
+//interactive mode
 	if(argc== 1)
 	{
         std::cout<< "select tool: ytdlp(1)";
@@ -71,18 +73,24 @@ int main(int argc, char** argv)
 
         if(tool== "1")
 		{
-            std::cout<< "youtube playlist link: ";
+            std::cout<< "youtube playlist link: \n";
             std::getline(std::cin, youtubeLink);
-            std::cout<< "root playlist path: ";
+            std::cout<< "root playlist path: \n";
             std::getline(std::cin, rootPlaylistPath);
-            std::cout<< "archive file path: ";
+            std::cout<< "archive file path: \n";
             std::getline(std::cin, archiveFile);
-			std::cout<< "the name of the browser you're using: ";
+			std::cout<< "the file name of the browser you're using e.g \"/usr/bin/->firefox<-\": \n";
 			std::getline(std::cin, browser);
 
 
 			//TODO: ytdlp logic here
-			ytdlpLogic(
+
+			std::cout<<"remember to open your browser with youtube open, preferably with your account logged in!\npress enter when you're done\n";
+			
+			std::string dump;
+			std::getline(std::cin, dump);
+
+			verboseYtdlpLogic(
 				
 				rootPlaylistPath,
 				youtubeLink,
@@ -91,22 +99,34 @@ int main(int argc, char** argv)
 				true
 			);
         }
-        return 0;
+		return 0;
     }
-
+//CLI mode
+	CLI11_PARSE(dmeh, argc, argv);
+	dmeh.require_subcommand(1);
 	if(ytdlp->parsed())
 	{
-        std::cout<< "Running Playlist Tool:\n"
-                 << "  Link:    "<< youtubeLink<<"\n"
-                 << "  Root:    "<< rootPlaylistPath<<"\n"
-                 << "  Archive: "<< archiveFile<<"\n";
+        std::cout<< "running dmeh:\n"
+                 << "  link:         "<< youtubeLink<<"\n"
+                 << "  root path:    "<< rootPlaylistPath<<"\n"
+                 << "  archive path: "<< archiveFile<<"\n";
+		
+		if(verbose==true)
+		{
+			verboseYtdlpLogic(
+				
+				rootPlaylistPath,
+				youtubeLink,
+				archiveFile,
+				browser,
+				true
+			);
+		}
     }
-	/*
-	else if(spotifycli->parsed())
-	{
-    	TODO:
-    }
-	*/
+	// else if(spotifydlp->parsed())
+	// {
+    // 	TODO:
+    // }
 
 	return 0;
 }
