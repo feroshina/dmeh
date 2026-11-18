@@ -1,5 +1,5 @@
 /*CLI management*/
-#include<CLI11.hpp>
+#include<CLI/CLI.hpp>
 
 /*io*/
 #include<iostream>
@@ -107,6 +107,6 @@ int main(int argc, char** argv)
     	TODO:
     }
 	*/
-	
+
 	return 0;
 }
