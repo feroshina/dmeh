@@ -56,6 +56,9 @@ int main(int argc, char** argv)
 
 		bool verbose{false};
 		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes");
+   
+   bool cookies;
+   ytdlp->add_option("-c, --cookies", cookies,"enables cookies");
 
 		ytdlp->footer(
 			"Example (Command line):\n
@@ -119,7 +122,7 @@ int main(int argc, char** argv)
 				youtubeLink,
 				archiveFile,
 				browser,
-				true
+				cookies
 			);
 		}
     }
