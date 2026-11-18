@@ -14,4 +14,9 @@ better/more flags like ´-v/--verbose --noconfirm´
 
 # dependencies
 bash, ytdlp (python-ytdlp depending on distribution), g++  
-will update acording to the progress of the project
+will update acording to the progress of the project  
+  
+for Arch Linux
+```
+sudo pacman -S cli11
+```
