@@ -13,17 +13,17 @@ void verboseYtdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, st
 	std::string buffer;
 	if(cookies==true)
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser "+browser+" -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser "+browser+" -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
 		system(buffer.c_str());
 	}
 	else if(cookies==false && browser.empty())
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata -N 4 -i --geo-bypass --retry 10 -x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata -N 4 -i --geo-bypass --retry 10 -x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
 		system(buffer.c_str());
 	}
 	else if(cookies==true && browser.empty())
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser firefox -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser firefox -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
 		system(buffer.c_str());
 	}
 }
