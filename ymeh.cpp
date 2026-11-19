@@ -8,28 +8,23 @@
 /*string management*/
 #include<string>
 
-void verboseYtdlpLogic(std::string rootPlaylistPath, std:string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
+void verboseYtdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
 {
+	std::string buffer;
 	if(cookies==true)
 	{
-		system(
-
-			"yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser "+browser+" -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile
-		);
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser "+browser+" -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		system(buffer.c_str());
 	}
 	else if(cookies==false && browser.empty())
 	{
-		system(
-
-			"yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata -N 4 -i --geo-bypass --retry 10 -x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile
-		);
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata -N 4 -i --geo-bypass --retry 10 -x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		system(buffer.c_str());
 	}
 	else if(cookies==true && browser.empty())
 	{
-		system(
-
-			"yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser firefox -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile
-		);
+		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser firefox -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink.c_str()+" --download-archive "+archiveFile;
+		system(buffer.c_str());
 	}
 }
 
@@ -43,13 +38,13 @@ int main(int argc, char** argv)
 	
 	//main ytdlp arguments
 		std::string youtubeLink;
-		ytdlp->add_option("-l, --link, youtube_link",youtubeLink,"the URL of the youtube playlist")->required();
+		ytdlp->add_option("-l, --link",youtubeLink,"the URL of the youtube playlist")->required();
 
 		std::string rootPlaylistPath;
-		ytdlp->add_option("-rp, --rootpath, root_playlist_path",rootPlaylistPath,"the directory where the playlists will be downloaded")->required();
+		ytdlp->add_option("-p, --folderpath",rootPlaylistPath,"the directory where the playlists will be downloaded")->required();
 
 		std::string archiveFile;
-		ytdlp->add_option("-af, --archivefile, archive_file",archiveFile,"where the video IDs will be stored to not repeat downloads")->required();
+		ytdlp->add_option("-a, --archivefile",archiveFile,"where the video IDs will be stored to not repeat downloads")->required();
 
 		std::string browser;
 		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser");
@@ -57,14 +52,14 @@ int main(int argc, char** argv)
 		bool verbose{false};
 		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes");
    
-   bool cookies;
-   ytdlp->add_option("-c, --cookies", cookies,"enables cookies");
+		bool cookies{false};
+		ytdlp->add_option("-c, --cookies", cookies,"enables cookies");
 
 		ytdlp->footer(
-			"Example (Command line):\n
-			dmeh https://youtube.com/1234 /home/user/Music ~archive.txt\n
-			Interactive mode:\n
-			simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
+			"Example (Command line):\n"
+			"dmeh https://youtube.com/1234 /home/user/Music ~archive.txt\n"
+			"Interactive mode:\n"
+			"simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
 		);
 
 //interactive mode
