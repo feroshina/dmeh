@@ -8,12 +8,12 @@ works on Android via termux, still need to automate the process
 c++ version currently only for linux
 
 # project goals
-future spotify-dlp integration  
+future spotdl integration  
 optional automatic history archiver
 better/more flags like ´-v/--verbose --noconfirm´
 
 # dependencies
-bash, ytdlp (python-ytdlp depending on distribution), g++  
+bash, ytdlp, spotdl, g++  
 will update acording to the progress of the project  
   
 for Arch Linux
