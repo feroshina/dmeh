@@ -8,24 +8,44 @@
 /*string management*/
 #include<string>
 
+
 void verboseYtdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
 {
+	std::string mainCommand=
+		"yt-dlp --extractor-args "
+		"youtubetab:skip=authcheck "
+		"--yes-playlist "
+		"--embed-thumbnail "
+		"--embed-metadata "
+		"-N 4 "
+		"-i "
+		"--geo-bypass "
+		"--retry 10"
+		"-x --audio-format mp3 "
+		"--ignore-errors"
+		"-f bestaudio";
+
 	std::string buffer;
-	if(cookies==true)
+	if(cookies==true && !browser.empty())
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser "+browser+" -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
+		buffer= mainCommand+"--cookies-from-browser \""+browser+"\" --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
 		system(buffer.c_str());
 	}
 	else if(cookies==false && browser.empty())
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata -N 4 -i --geo-bypass --retry 10 -x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+" -o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
+		buffer= mainCommand+"--paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
 		system(buffer.c_str());
 	}
 	else if(cookies==true && browser.empty())
 	{
-		buffer= "yt-dlp --extractor-args youtubetab:skip=authcheck --yes-playlist --embed-thumbnail --embed-metadata --cookies-from-browser firefox -N 4 -i --geo-bypass --retry 10	-x --audio-format mp3 --ignore-errors -f bestaudio --paths "+rootPlaylistPath+"	-o '%(playlist)s/%(title)s.%(ext)s - %(id)s' "+youtubeLink+" --download-archive "+archiveFile+"";
+		buffer= mainCommand+"--cookies-from-browser firefox --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
 		system(buffer.c_str());
 	}
+}
+
+void verboseSpotdlLogic(std::string rootPlaylistPath, std::string spotifyLink, std::string archiveFile, std::string browser, bool cookies)
+{
+	
 }
 
 int main(int argc, char** argv)
@@ -36,31 +56,36 @@ int main(int argc, char** argv)
 	CLI::App* ytdlp= dmeh.add_subcommand("ytdlp","using ytdlp as downloader");
 	ytdlp->get_formatter()->label("Positionals","Arguments");
 	
+	CLI::App* spotdl= dmeh.add_subcommand("spotdl","using spotdl as downloader");
+	spotdl->get_formatter()->label("Positionals","Arguments");
 	//main ytdlp arguments
 		std::string youtubeLink;
-		ytdlp->add_option("-l, --link",youtubeLink,"the URL of the youtube playlist")->required();
+		ytdlp->add_option("-l, --link",youtubeLink,"the URL of the youtube playlist\n")->required();
 
 		std::string rootPlaylistPath;
-		ytdlp->add_option("-p, --folderpath",rootPlaylistPath,"the directory where the playlists will be downloaded")->required();
+		ytdlp->add_option("-p, --folderpath",rootPlaylistPath,"the directory where the playlists will be downloaded\n")->required();
 
 		std::string archiveFile;
-		ytdlp->add_option("-a, --archivefile",archiveFile,"where the video IDs will be stored to not repeat downloads")->required();
+		ytdlp->add_option("-a, --archivefile",archiveFile,"where the video IDs will be stored to not repeat downloads\n")->required();
 
 		std::string browser;
-		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser");
+		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser\n");
 
 		bool verbose{false};
-		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes");
+		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes\n");
    
 		bool cookies{false};
-		ytdlp->add_option("-c, --cookies", cookies,"enables cookies");
+		ytdlp->add_option("-c, --cookies", cookies,"enables cookies\n");
 
 		ytdlp->footer(
 			"Example (Command line):\n"
-			"dmeh https://youtube.com/1234 /home/user/Music ~archive.txt\n"
+			"\tdmeh ytdlp https://youtube.com/1234 /home/user/Music ~archive.txt\n"
 			"Interactive mode:\n"
-			"simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
+			"\tsimply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
 		);
+	
+	//main spotdl arguments
+		
 
 //interactive mode
 	if(argc== 1)
@@ -69,7 +94,7 @@ int main(int argc, char** argv)
         std::string tool;
         std::getline(std::cin, tool);
 
-        if(tool== "1")
+		if(tool== "1")
 		{
             std::cout<< "youtube playlist link: \n";
             std::getline(std::cin, youtubeLink);
@@ -80,16 +105,13 @@ int main(int argc, char** argv)
 			std::cout<< "the file name of the browser you're using e.g \"/usr/bin/->firefox<-\": \n";
 			std::getline(std::cin, browser);
 
-
-			//TODO: ytdlp logic here
-
 			std::cout<<"remember to open your browser with youtube open, preferably with your account logged in!\npress enter when you're done\n";
 			
 			std::string dump;
 			std::getline(std::cin, dump);
 
-			verboseYtdlpLogic(
-				
+			verboseYtdlpLogic
+			(	
 				rootPlaylistPath,
 				youtubeLink,
 				archiveFile,
@@ -97,6 +119,10 @@ int main(int argc, char** argv)
 				true
 			);
         }
+		else
+		{
+			std::cout<<"tool not specified.";	
+		}
 		return 0;
     }
 //CLI mode
