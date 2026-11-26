@@ -9,43 +9,65 @@
 #include<string>
 
 
-void verboseYtdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, std::string archiveFile, std::string browser, bool cookies)
+void ytdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, std::string archiveFile, std::string browser, bool cookies, bool verbose)
 {
-	std::string mainCommand=
-		"yt-dlp --extractor-args "
-		"youtubetab:skip=authcheck "
-		"--yes-playlist "
-		"--embed-thumbnail "
-		"--embed-metadata "
-		"-N 4 "
-		"-i "
-		"--geo-bypass "
-		"--retry 10"
-		"-x --audio-format mp3 "
-		"--ignore-errors"
-		"-f bestaudio";
-
 	std::string buffer;
-	if(cookies==true && !browser.empty())
+
+	std::string mainCommand=
+			"yt-dlp --extractor-args "
+			"youtubetab:skip=authcheck "
+			"--yes-playlist "
+			"--embed-thumbnail "
+			"--embed-metadata "
+			"-N 4 "
+			"-i "
+			"--geo-bypass "
+			"--retry 10"
+			"-x --audio-format mp3 "
+			"--ignore-errors "
+			"-f bestaudio ";
+
+	if(verbose==true)
 	{
-		buffer= mainCommand+"--cookies-from-browser \""+browser+"\" --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
-		system(buffer.c_str());
+		if(cookies==true && !browser.empty())
+		{
+			buffer= mainCommand+"--cookies-from-browser \""+browser+"\" --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
+		else if(cookies==false && browser.empty())
+		{
+			buffer= mainCommand+"--paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
+		else if(cookies==true && browser.empty())
+		{
+			buffer= mainCommand+"--cookies-from-browser firefox --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
 	}
-	else if(cookies==false && browser.empty())
+	else
 	{
-		buffer= mainCommand+"--paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
-		system(buffer.c_str());
-	}
-	else if(cookies==true && browser.empty())
-	{
-		buffer= mainCommand+"--cookies-from-browser firefox --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
-		system(buffer.c_str());
+		if(cookies==true && !browser.empty())
+		{
+			buffer= mainCommand+"--quiet "+"--cookies-from-browser \""+browser+"\" --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
+		else if(cookies==false && browser.empty())
+		{
+			buffer= mainCommand+"--quiet "+"--paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
+		else if(cookies==true && browser.empty())
+		{
+			buffer= mainCommand+"--quiet "+"--cookies-from-browser firefox --paths \""+rootPlaylistPath+"\" -o '%(playlist)s/%(title)s - %(id)s' \""+youtubeLink+"\" --download-archive \""+archiveFile+"\"";
+			system(buffer.c_str());
+		}
 	}
 }
 
-void verboseSpotdlLogic(std::string rootPlaylistPath, std::string spotifyLink, std::string archiveFile, std::string browser, bool cookies)
+void spotdlLogic(std::string rootPlaylistPath, std::string spotifyLink, std::string archiveFile, std::string browser, bool cookies)
 {
-	
+	TODO:;
 }
 
 int main(int argc, char** argv)
@@ -69,7 +91,7 @@ int main(int argc, char** argv)
 		ytdlp->add_option("-a, --archivefile",archiveFile,"where the video IDs will be stored to not repeat downloads\n")->required();
 
 		std::string browser;
-		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser\n");
+		ytdlp->add_option("-b, --browser",browser,"specify the browser to be used, getting the cookies from said browser (read yt-dlp documents to see if your browser is available)\n");
 
 		bool verbose{false};
 		ytdlp->add_option("-v, --verbose",verbose,"makes the ytdlp process visible, useful for slow internet when cookies stop working before the download finishes\n");
@@ -79,13 +101,13 @@ int main(int argc, char** argv)
 
 		ytdlp->footer(
 			"Example (Command line):\n"
-			"\tdmeh ytdlp https://youtube.com/1234 /home/user/Music ~archive.txt\n"
+			"    dmeh ytdlp https://youtube.com/1234 /home/user/Music ~archive.txt\n"
 			"Interactive mode:\n"
-			"\tsimply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
+			"    simply run dmeh without arguments to be prompted with a standard walkthrough, using a default preset\n"
 		);
 	
 	//main spotdl arguments
-		
+		TODO:;
 
 //interactive mode
 	if(argc== 1)
@@ -110,12 +132,13 @@ int main(int argc, char** argv)
 			std::string dump;
 			std::getline(std::cin, dump);
 
-			verboseYtdlpLogic
+			ytdlpLogic
 			(	
 				rootPlaylistPath,
 				youtubeLink,
 				archiveFile,
 				browser,
+				true,
 				true
 			);
         }
@@ -130,22 +153,21 @@ int main(int argc, char** argv)
 	dmeh.require_subcommand(1);
 	if(ytdlp->parsed())
 	{
-        std::cout<< "running dmeh:\n"
-                 << "  link:         "<< youtubeLink<<"\n"
-                 << "  root path:    "<< rootPlaylistPath<<"\n"
-                 << "  archive path: "<< archiveFile<<"\n";
-		
-		if(verbose==true)
-		{
-			verboseYtdlpLogic(
+        std::cout
+		<<"running dmeh:\n"
+        <<"  link:         "<< youtubeLink<<"\n"
+        <<"  root path:    "<< rootPlaylistPath<<"\n"
+        <<"  archive path: "<< archiveFile<<"\n";
+
+		ytdlpLogic(
 				
-				rootPlaylistPath,
-				youtubeLink,
-				archiveFile,
-				browser,
-				cookies
-			);
-		}
+			rootPlaylistPath,
+			youtubeLink,
+			archiveFile,
+			browser,
+			cookies,
+			verbose
+		);
     }
 	// else if(spotifydlp->parsed())
 	// {
