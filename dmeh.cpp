@@ -22,7 +22,7 @@ void ytdlpLogic(std::string rootPlaylistPath, std::string youtubeLink, std::stri
 			"-N 4 "
 			"-i "
 			"--geo-bypass "
-			"--retry 10"
+			"--retry 10 "
 			"-x --audio-format mp3 "
 			"--ignore-errors "
 			"-f bestaudio ";
